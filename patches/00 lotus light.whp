@@ -1,0 +1,38 @@
+WHORLD2
+RingGrowth	2.28	0	0	0	0.5
+RingSpacing	2.641	4	-1	0.05	0.5
+PolySides	6	6	3	0.01	0.5
+RotateSpeed	0.001	0	0.01	0.01	0.5
+AspectRatio	-0.03	0	0	0	0.5
+SkewRadius	0	0	0	0	0.5
+SkewAngle	0.09423	0	0	0	0.5
+StarFactor	0	4	2	0.05	0.5
+ColorSpeed	1.39	0	0	0	0.5
+Lightness	0.5	0	0.333	0.18	0.5
+Saturation	0.75	0	0.25	0.15	0.5
+BkHue	0	0	0	0	0.5
+BkLightness	0	0	0	0	0.5
+BkSaturation	1	0	0	0	0.5
+Pinwheel	0	0	0	0	0.5
+LineWidth	1	0	0	0	0.5
+EvenCurve	0	0	0	0	0.5
+OddCurve	0	0	0	0	0.5
+Speed	3.3
+Zoom	1
+Damping	0.186261
+Trail	0
+Rings	1000
+Tempo	100
+HueLoopLength	30
+CanvasScale	1.4
+Origin	0.5 0.5
+DrawMode	0
+OrgMotion	0
+Hue	294.018
+Mirror	0
+Reverse	0
+Convex	0
+InvertColor	0
+LoopHue	0
+Pause	0
+ZoomCenter	0

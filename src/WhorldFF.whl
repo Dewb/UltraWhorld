@@ -1,0 +1,113 @@
+WHPL2
+PLPatch	0	81	"00 lotus light.whp"
+PLPatch	0	87	"01 yin yang.whp"
+PLPatch	0	69	"02 vortex.whp"
+PLPatch	0	82	"03 silhouette.whp"
+PLPatch	0	84	"04 stain glass.whp"
+PLPatch	0	89	"05 raindrops.whp"
+PLPatch	0	85	"06 saturn breast.whp"
+PLPatch	0	73	"07 snail.whp"
+PLPatch	0	79	"08 streaming.whp"
+PLPatch	0	80	"09 anemone.whp"
+PLPatch	0	65	"10 luminous jellyfish.whp"
+PLPatch	0	83	"11 worm ballet.whp"
+PLPatch	0	68	"12 snake charmer.whp"
+PLPatch	0	70	"13 seed of life.whp"
+PLPatch	0	71	"14 thick blue lines.whp"
+PLPatch	0	72	"15 celtic web.whp"
+PLPatch	0	74	"16 stellascope.whp"
+PLPatch	0	75	"17 illustrated curves.whp"
+PLPatch	0	76	"18 xray mirrors.whp"
+PLPatch	0	90	"19 house of cards.whp"
+PLPatch	0	88	"20 ice tunnel.whp"
+PLPatch	0	67	"21 jetsons.whp"
+MASpeed	3.3
+MAZoom	1
+MADamping	0.186261
+MATrail	0
+MARings	1000
+MATempo	100
+MAHueLoopLength	30
+MACanvasScale	1.4
+MFOrigin	0.5 0.5
+MFDrawMode	0
+MFOrgMotion	0
+MFHue	0
+MFMirror	0
+MFReverse	0
+MFConvex	0
+MFInvertColor	0
+MFLoopHue	0
+MFPause	0
+MFZoomCenter	0
+MFViewSel	3
+MFEditSel	0
+MFPatchMode	0
+XFPos	0
+XFSeconds	0
+XFLoop	0
+XFWaveform	0
+PLMScheme	1
+PLMChan	0
+PLMFirst	0
+PLMLast	127
+PLPatchSecs	60
+PLXFadeSecs	0
+PLPlaying	0
+PLShuffle	0
+PLCurBank	0
+PLCurPatch	0
+PLCurPatchBank	0
+MSRow	RingGrowth	10	1	0	7
+MSRow	RingSpacing	50	1	1	7
+MSRow	PolySides	50	1	3	7
+MSRow	RotateSpeed	0.0872665	1	4	7
+MSRow	AspectRatio	3	1	5	7
+MSRow	SkewRadius	2	1	6	7
+MSRow	SkewAngle	3.14159	1	7	7
+MSRow	StarFactor	3	1	8	7
+MSRow	ColorSpeed	10	1	10	7
+MSRow	Lightness	1	1	11	7
+MSRow	Saturation	1	1	12	7
+MSRow	BkHue	360	1	13	7
+MSRow	BkLightness	1	1	14	7
+MSRow	BkSaturation	1	1	15	7
+MSRow	Pinwheel	3	1	9	7
+MSRow	LineWidth	50	1	2	7
+MSRow	EvenCurve	3	0	0	7
+MSRow	OddCurve	3	0	0	7
+MSRow	Bank	64	1	0	0
+MSRow	Speed	1	1	0	1
+MSRow	Zoom	1	1	0	2
+MSRow	Damping	0.5	1	0	3
+MSRow	Trail	0.5	1	0	14
+MSRow	Rings	0.5	1	0	9
+MSRow	PatchSecs	30	1	0	4
+MSRow	XFadeSecs	30	1	0	5
+MSRow	XFadePos	0.5	1	0	8
+MSRow	OriginX	0.5	1	0	16
+MSRow	OriginY	0.5	1	0	17
+MSRow	Hue	0.5	1	0	70
+MSRow	HueLoopLength	180	1	0	71
+MSRow	CanvasScale	1	1	0	59
+MSRow	PatchMode	0.5	1	0	60
+MSRow	RandomPatch	1	1	0	61
+MSRow	LoadNextA	1	1	0	62
+MSRow	LoadNextB	1	1	0	63
+MSRow	LoopHue	1	1	0	64
+MSRow	RotateHue	1	1	0	66
+MSRow	InvertColor	1	1	0	68
+MSRow	Mirror	1	1	0	80
+MSRow	Fill	1	1	0	81
+MSRow	Outline	1	1	0	82
+MSRow	XRay	1	1	0	83
+MSRow	RandomPhase	1	1	0	84
+MSRow	Reverse	1	1	0	85
+MSRow	ToggleOrigin	1	1	0	86
+MSRow	AutoPlay	1	1	0	87
+MSRow	Pause	1	1	0	88
+MSRow	Clear	1	1	0	89
+MSRow	XFadePlay	1	1	0	102
+MSRow	XFadeLoop	1	1	0	103
+MSRow	Convex	1	1	0	104
+MSRow	ZoomCenter	1	1	0	105

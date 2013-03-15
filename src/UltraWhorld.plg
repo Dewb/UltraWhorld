@@ -1,0 +1,134 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: UltraWhorld - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo"Release/UltraWhorld.res" /d "NDEBUG" /d "_AFXDLL" "C:\Chris\MyProjects\Whorld\UltraWhorld\UltraWhorld.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPD8C.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_WINDLL" /D "_AFXDLL" /Fp"Release/UltraWhorld.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Chris\MyProjects\Whorld\UltraWhorld\BackBufGDI.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\Benchmark.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\DPoint.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\FormatIO.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\FreeFrame.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\hls.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\MainFrm.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\NormVal.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\Oscillator.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\ParmInfo.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\Patch.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\PatchLink.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\PathStr.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\Playlist.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\RealTimer.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\SortStringArray.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\UltraWhorld.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\WCritSec.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\WEvent.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\WhorldPlug.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\WhorldView.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\WThread.cpp"
+"C:\Chris\MyProjects\Whorld\UltraWhorld\WTimer.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPD8C.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPD8D.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "_WINDLL" /D "_AFXDLL" /Fp"Release/UltraWhorld.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Chris\MyProjects\Whorld\UltraWhorld\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPD8D.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPD8E.tmp" with contents
+[
+shlwapi.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/UltraWhorld.pdb" /machine:I386 /def:".\UltraWhorld.def" /out:"Release/UltraWhorld.dll" /implib:"Release/UltraWhorld.lib" 
+.\Release\BackBufGDI.obj
+.\Release\Benchmark.obj
+.\Release\DPoint.obj
+.\Release\FormatIO.obj
+.\Release\FreeFrame.obj
+.\Release\hls.obj
+.\Release\MainFrm.obj
+.\Release\NormVal.obj
+.\Release\Oscillator.obj
+.\Release\ParmInfo.obj
+.\Release\Patch.obj
+.\Release\PatchLink.obj
+.\Release\PathStr.obj
+.\Release\Playlist.obj
+.\Release\RealTimer.obj
+.\Release\SortStringArray.obj
+.\Release\StdAfx.obj
+.\Release\UltraWhorld.obj
+.\Release\WCritSec.obj
+.\Release\WEvent.obj
+.\Release\WhorldPlug.obj
+.\Release\WhorldView.obj
+.\Release\WThread.obj
+.\Release\WTimer.obj
+.\Release\UltraWhorld.res
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPD8E.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+
+NOTE: WINVER has been defined as 0x0500 or greater which enables
+Windows NT 5.0 and Windows 98 features. When these headers were released,
+Windows NT 5.0 beta 1 and Windows 98 beta 2.1 were the current versions.
+
+For this release when WINVER is defined as 0x0500 or greater, you can only
+build beta or test applications.  To build a retail application,
+set WINVER to 0x0400 or visit http://www.microsoft.com/msdn/sdk
+to see if retail Windows NT 5.0 or Windows 98 headers are available.
+
+See the SDK release notes for more information.
+
+Compiling...
+BackBufGDI.cpp
+Benchmark.cpp
+DPoint.cpp
+FormatIO.cpp
+FreeFrame.cpp
+hls.cpp
+MainFrm.cpp
+NormVal.cpp
+Oscillator.cpp
+ParmInfo.cpp
+Patch.cpp
+PatchLink.cpp
+PathStr.cpp
+Playlist.cpp
+RealTimer.cpp
+SortStringArray.cpp
+UltraWhorld.cpp
+WCritSec.cpp
+WEvent.cpp
+WhorldPlug.cpp
+Generating Code...
+Compiling...
+WhorldView.cpp
+WThread.cpp
+WTimer.cpp
+Generating Code...
+Linking...
+   Creating library Release/UltraWhorld.lib and object Release/UltraWhorld.exp
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPD94.bat" with contents
+[
+@echo off
+copy Release\UltraWhorld.dll C:\temp\OpenTZTHiResBeta0_11Full\OpenTZT\Effector\Bank0\F6
+]
+Creating command line "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPD94.bat"
+
+        1 file(s) copied.
+
+
+
+<h3>Results</h3>
+UltraWhorld.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
