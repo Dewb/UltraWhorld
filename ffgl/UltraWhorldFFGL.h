@@ -1,11 +1,24 @@
 #include <FFGLShader.h>
 #include <FFGLPluginSDK.h>
 
+#include <stdafx.h>
+#include <WhorldView.h>
+
 class UltraWhorldFFGL : public CFreeFrameGLPlugin
 {
 public:
 	UltraWhorldFFGL();
     virtual ~UltraWhorldFFGL() {}
+    
+#define FFPARM(tag, defval, name) PARAM_##tag,
+	enum {
+#include "FFParmDef.h"
+		NUM_PARAMS
+	};
+	enum {
+		NUM_INPUTS = 1,
+		MAX_STRING = 16
+	};
     
 	///////////////////////////////////////////////////
 	// FreeFrameGL plugin methods
@@ -29,18 +42,10 @@ public:
         return FF_FAIL;
     }
     
-protected:
-	float m_fClip;
-	
-	int m_initResources;
-        
-	FFGLExtensions m_extensions;
-    FFGLShader m_shader;
-	GLint m_inputTextureLocation;
-	GLint m_maxCoordsLocation;
-	GLint m_clipDistanceLocation;
+protected:	
     
-    GLuint m_vbo;
+    CWhorldView m_View;
+    CParmInfo m_ParmInfo;
 };
 
 

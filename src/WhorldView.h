@@ -48,7 +48,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CWhorldView window
 
-#include <afxtempl.h>
+
 #include "BackBufGDI.h"
 #include "Oscillator.h"
 #include "ParmInfo.h"
@@ -160,12 +160,14 @@ public:
 // Operations
 	void	TimerHook(const CParmInfo& Info, const PARMS& GlobParm, double Speed);
 	void	ClearScreen();
+#if defined _WIN32 || defined _WIN64
 	void	Serialize(CArchive &ar);
 	void	MiniSerialize(CArchive &ar);
 	bool	Serialize(CFile& File, bool Load);
 	bool	Serialize(LPCTSTR Path, bool Load);
 	HBITMAP	MakeDIB(const CSize *DstSize = NULL, const CSize *SrcSize = NULL, bool ScaleToFit = FALSE);
 	bool	ExportBitmap(CFile& File, const CSize *DstSize, const CSize *SrcSize, bool ScaleToFit, int Resolution);
+#endif
 	void	StepRings(bool Forward);
 	void	FlushHistory();
 	int		GetMiniSnapshotSize() const;
@@ -273,7 +275,8 @@ protected:
 		DPOINT	VideoOrg;		// video origin in mirror mode
 	} STATE;
 	typedef CParmInfo::ROW ROW;
-	typedef	CArray<DPOINT, DPOINT&>	DPOINT_ARRAY;
+	typedef	std::vector<DPOINT>	DPOINT_ARRAY;
+    typedef std::vector<DWORD> CDWordArray;
 
 // Constants
 	enum {
@@ -301,7 +304,7 @@ protected:
 	PARMS	m_Parms;				// current parameters
 	PARMS	m_InParms;				// input parameters
 	COscillator	m_Osc[ROWS];		// oscillators
-	CList<RING, RING&>	m_Ring;		// array of rings
+    std::list<RING>	m_Ring;		// array of rings
 	CBackBufGDI	m_gdi;				// GDI back buffer
 	POINT	m_pa[MAX_POINTS * 2];	// enough for two rings
 	CParmInfo	m_PrevInfo;			// previous parameter info
@@ -313,7 +316,7 @@ protected:
 	double	m_NewGrowth;	// new ring growth, computed at start of TimerHook
 	int		m_Options;		// see options enum
 	int		m_MaxRings;		// maximum number of rings
-	POSITION	m_DelPos;	// if non-null, position of ring after last deletion
+    std::list<RING>::iterator	m_DelPos;	// if non-null, position of ring after last deletion
 	bool	m_FlushHistory;	// if true, next TimerHook won't interpolate
 	bool	m_MiniRings;	// if true, Serialize reads/writes mini-rings
 	bool	m_Paused;		// if true, TimerHook isn't being called
@@ -327,6 +330,7 @@ protected:
 	GLOBRING	m_GlobRing;	// global ring data
 
 // Helpers
+    void    DrawRing(HDC dc, RING& ring, bool isHead);
 	void	MirrorToNorm(const DPOINT& Mirror, DPOINT& Norm) const;
 	void	NormToMirror(const DPOINT& Norm, DPOINT& Mirror) const;
 	void	ResizeCanvas();
@@ -341,7 +345,9 @@ protected:
 	static	double	Wrap(double Val, double Limit);
 	static	double	Reflect(double Val, double Limit);
 	void	UpdateHue(double DeltaTick);
+#if defined _WIN32 || defined _WIN64
 	void	ThrowBadFormat(CArchive &ar);
+#endif
 };
 
 inline CWhorldView *CWhorldView::GetMainView()
@@ -356,7 +362,7 @@ inline CSize CWhorldView::GetSize() const
 
 inline int CWhorldView::GetRingCount() const
 {
-	return(m_Ring.GetCount());
+	return(m_Ring.size());
 }
 
 inline void CWhorldView::GetParms(PARMS& Parms) const
@@ -445,6 +451,7 @@ inline void CWhorldView::FlushHistory()
 	m_FlushHistory = TRUE;
 }
 
+#if defined _WIN32 || defined _WIN64
 inline void CWhorldView::MiniSerialize(CArchive &ar)
 {
 	m_MiniRings = TRUE;
@@ -458,6 +465,7 @@ inline int CWhorldView::GetMiniSnapshotSize() const
 		+ MINI_SNAP_INTS * sizeof(int)
 		+ MINI_RING_SIZE * GetRingCount());
 }
+#endif
 
 inline int CWhorldView::GetMaxRings() const
 {

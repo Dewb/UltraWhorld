@@ -189,7 +189,7 @@ CWhorldView::CWhorldView()
 	m_NewGrowth = 0;
 	m_Options = 0;
 	m_MaxRings = INT_MAX;
-	m_DelPos = NULL;
+	m_DelPos = m_Ring.end();
 	m_FlushHistory = FALSE;
 	m_MiniRings = FALSE;
 	m_Paused = FALSE;
@@ -226,8 +226,8 @@ END_MESSAGE_MAP()
 
 void CWhorldView::ClearScreen()
 {
-	m_Ring.RemoveAll();
-	m_DelPos = NULL;	// avoid bogus delete
+	m_Ring.clear();
+	m_DelPos = m_Ring.end();	// avoid bogus delete
 	m_st.RingOffset = 0;	// add a ring ASAP
 	if (m_Paused)
 		Invalidate();
@@ -273,9 +273,10 @@ void CWhorldView::SetZoom(double Zoom)
 	double	dz = Zoom / m_st.Zoom;	// delta zoom
 	static const DPOINT DPZERO = {0, 0};
 	DPOINT	zorg = m_ZoomType == ZT_WND_CENTER ? DPZERO : m_st.MirrorOrg;
-	POSITION	pos = m_Ring.GetHeadPosition();
-	while (pos != NULL) {
-		RING&	rp = m_Ring.GetNext(pos);
+	auto pos = m_Ring.begin();
+	while (pos != m_Ring.end()) {
+		RING&	rp = *pos;
+        pos++;
 		rp.Origin.x = (rp.Origin.x - zorg.x) * dz + zorg.x;
 		rp.Origin.y = (rp.Origin.y - zorg.y) * dz + zorg.y;
 	}
@@ -310,9 +311,8 @@ void CWhorldView::SetGlobalNormOrigin(const DPOINT& pt)
 	SetNormOrigin(pt);
 	delta.x -= m_st.MirrorOrg.x;
 	delta.y -= m_st.MirrorOrg.y;
-	POSITION	pos = m_Ring.GetHeadPosition();
-	for (int i = 0; i < m_Ring.GetCount(); i++) {
-		RING&	rp = m_Ring.GetNext(pos);
+	for(auto pos = m_Ring.begin(); pos != m_Ring.end(); ++pos) {
+		RING&	rp = *pos;
 		rp.Origin.x -= delta.x;
 		rp.Origin.y -= delta.y;
 	}
@@ -349,9 +349,10 @@ CSize CWhorldView::GetPaneSize() const
 
 void CWhorldView::InvertDrawMode(int ModeMask)
 {
-	POSITION	pos = m_Ring.GetHeadPosition();
-	for (int i = 0; i < m_Ring.GetCount(); i++)
-		m_Ring.GetNext(pos).DrawMode ^= ModeMask;
+    for(auto pos = m_Ring.begin(); pos != m_Ring.end(); ++pos) {
+		RING&	Ring = *pos;
+        Ring.DrawMode ^= ModeMask;
+	}
 	m_st.DrawMode ^= ModeMask;
 	if (m_Paused)
 		Invalidate();
@@ -359,10 +360,11 @@ void CWhorldView::InvertDrawMode(int ModeMask)
 
 void CWhorldView::SetDrawModeAllRings(int Mode)
 {
-	POSITION	pos = m_Ring.GetHeadPosition();
-	for (int i = 0; i < m_Ring.GetCount(); i++)
-		m_Ring.GetNext(pos).DrawMode = static_cast<short>(Mode);
-	m_st.DrawMode = Mode;
+    for(auto pos = m_Ring.begin(); pos != m_Ring.end(); ++pos) {
+		RING&	Ring = *pos;
+        Ring.DrawMode = static_cast<short>(Mode);
+	}
+    m_st.DrawMode = Mode;
 	if (m_Paused)
 		Invalidate();
 }
@@ -380,9 +382,8 @@ void CWhorldView::Mirror(bool Enable)
 
 void CWhorldView::RotateHue(double Degrees)
 {
-	POSITION	pos = m_Ring.GetHeadPosition();
-	while (pos != NULL) {
-		RING&	Ring = m_Ring.GetNext(pos);
+	for(auto pos = m_Ring.begin(); pos != m_Ring.end(); ++pos) {
+		RING&	Ring = *pos;
 		double	r, g, b;
 		Ring.Hue = Ring.Hue + Degrees;
 		if (Ring.Hue > 360)
@@ -405,9 +406,8 @@ void CWhorldView::InvertColor(bool Enable)
 {
 	if (Enable == IsColorInverted())
 		return;	// nothing to do
-	POSITION	pos = m_Ring.GetHeadPosition();
-	while (pos != NULL) {
-		RING&	Ring = m_Ring.GetNext(pos);
+	for(auto pos = m_Ring.begin(); pos != m_Ring.end(); ++pos) {
+		RING&	Ring = *pos;
 		Ring.Color ^= 0xffffff;
 	}
 	m_st.InvertMask = Enable ? 0xffffff : 0;
@@ -472,14 +472,14 @@ void CWhorldView::AddRing()
 	Ring.OddShear = float(m_Parms.OddShear);
 	// add ring to list
 	if (Ring.Reverse)
-		m_Ring.AddTail(Ring);
+		m_Ring.push_back(Ring);
 	else
-		m_Ring.AddHead(Ring);
-	while (m_Ring.GetCount() > m_MaxRings) {
+		m_Ring.push_front(Ring);
+	while (m_Ring.size() > m_MaxRings) {
 		if (Ring.Reverse)
-			m_Ring.RemoveHead();
+			m_Ring.pop_front();
 		else
-			m_Ring.RemoveTail();
+			m_Ring.pop_back();
 	}
 }
 
@@ -573,16 +573,14 @@ void CWhorldView::TimerHook(const CParmInfo& Info, const PARMS& GlobParm, double
 	m_st.BkColor = RGB(round(r * 255), round(g * 255), round(b * 255));
 	m_PrevInfo = Info;
 	// update rings
-	POSITION	NextPos = m_Ring.GetHeadPosition();
 	DPOINT	PrevOrg = m_st.MirrorOrg;
 	double	Trail = 1 - m_st.Trail;
 	bool	Reverse = m_Parms.RingGrowth < 0;
-	POSITION	CurPos = NULL;
-	m_DelPos = NULL;
-	while (NextPos != NULL) {
-		CurPos = NextPos;
+	m_DelPos = m_Ring.end();
+    auto pos = m_Ring.begin();
+	while(pos != m_Ring.end()) {
 		// update ring origins
-		RING&	rp = m_Ring.GetNext(NextPos);
+		RING&	rp = *pos;
 		rp.Origin.x += (PrevOrg.x - rp.Origin.x) * Trail;
 		rp.Origin.y += (PrevOrg.y - rp.Origin.y) * Trail;
 		PrevOrg = rp.Origin;
@@ -593,13 +591,17 @@ void CWhorldView::TimerHook(const CParmInfo& Info, const PARMS& GlobParm, double
 		rp.Shift.y += rp.ShiftDelta.y * m_Parms.RingGrowth;
 		if (Reverse) {
 			if (rp.Steps <= 0) {
-				m_Ring.RemoveAt(CurPos);
-			}
+				pos = m_Ring.erase(pos);
+			} else {
+                ++pos;
+            }
 		} else {
 			if (rp.Delete) {
-				m_Ring.RemoveAt(CurPos);
-				m_DelPos = NextPos;	// save position after last deletion for cascade
-			}
+				pos = m_Ring.erase(pos);
+				m_DelPos = pos;	// save position after last deletion for cascade
+			} else {
+                ++pos;
+            }
 		}
 	}
 	m_GlobRing.Rot = GlobParm.RotateSpeed / 5 * 180;
@@ -629,9 +631,8 @@ void CWhorldView::SetTimerFreq(double Freq)
 void CWhorldView::StepRings(bool Forward)
 {
 	double	delta = Forward ? m_Parms.RingGrowth : -m_Parms.RingGrowth;
-	POSITION	pos = m_Ring.GetHeadPosition();
-	while (pos != NULL) {
-		RING&	Ring = m_Ring.GetNext(pos);
+    for(auto pos = m_Ring.begin(); pos != m_Ring.end(); ++pos) {
+		RING&	Ring = *pos;
 		Ring.Steps += delta;
 		Ring.Rot += Ring.RotDelta * delta;
 		Ring.Shift.x += Ring.ShiftDelta.x * delta;
@@ -677,26 +678,25 @@ void CWhorldView::SetHueLoopLength(double Length)
 
 void CWhorldView::SetLineWidth(const CDWordArray& LineWidth)
 {
-	POSITION	pos = m_Ring.GetHeadPosition();
-	for (int i = 0; i < m_Ring.GetCount(); i++)
-		m_Ring.GetNext(pos).LineWidth = short(LineWidth[i]);
+	auto pos = m_Ring.begin();
+	for (int i = 0; i < m_Ring.size(); i++)
+		(*(pos++)).LineWidth = short(LineWidth[i]);
 }
 
 void CWhorldView::GetLineWidth(CDWordArray& LineWidth) const
 {
-	POSITION	pos = m_Ring.GetHeadPosition();
-	LineWidth.SetSize(m_Ring.GetCount());
-	for (int i = 0; i < m_Ring.GetCount(); i++)
-		LineWidth[i] = m_Ring.GetNext(pos).LineWidth;
+	auto pos = m_Ring.begin();
+	for (int i = 0; i < m_Ring.size(); i++)
+		LineWidth[i] = (*(pos++)).LineWidth;
 }
 
 void CWhorldView::ScaleLineWidth(double Scaling, CDWordArray& PrevLineWidth, int& PrevGlobLineWidth)
 {
 	CDWordArray	LineWidth;
 	GetLineWidth(LineWidth);
-	PrevLineWidth.Copy(LineWidth);
+    std::copy(LineWidth.begin(), LineWidth.end(), PrevLineWidth.begin());
 	PrevGlobLineWidth = m_GlobRing.LineWidth;
-	for (int i = 0; i < LineWidth.GetSize(); i++)
+	for (int i = 0; i < LineWidth.size(); i++)
 		LineWidth[i] = round(max(LineWidth[i], 1) * Scaling);
 	SetLineWidth(LineWidth);
 	m_GlobRing.LineWidth = round(m_GlobRing.LineWidth * Scaling);
@@ -704,17 +704,17 @@ void CWhorldView::ScaleLineWidth(double Scaling, CDWordArray& PrevLineWidth, int
 
 void CWhorldView::SetOrigin(const DPOINT_ARRAY& Origin)
 {
-	POSITION	pos = m_Ring.GetHeadPosition();
-	for (int i = 0; i < m_Ring.GetCount(); i++)
-		m_Ring.GetNext(pos).Origin = Origin[i];
+	auto pos = m_Ring.begin();
+	for (int i = 0; i < m_Ring.size(); i++)
+		(*(pos++)).Origin = Origin[i];
 }
 
 void CWhorldView::ScaleOrigin(double Scaling, DPOINT_ARRAY& PrevOrigin)
 {
-	PrevOrigin.SetSize(m_Ring.GetCount());
-	POSITION	pos = m_Ring.GetHeadPosition();
-	for (int i = 0; i < m_Ring.GetCount(); i++) {
-		RING&	rp = m_Ring.GetNext(pos);
+	PrevOrigin.resize(m_Ring.size());
+	auto pos = m_Ring.begin();
+	for (int i = 0; i < m_Ring.size(); i++) {
+		RING&	rp = *(pos++);
 		PrevOrigin[i] = rp.Origin;
 		rp.Origin.x *= Scaling;
 		rp.Origin.y *= Scaling;
@@ -723,9 +723,8 @@ void CWhorldView::ScaleOrigin(double Scaling, DPOINT_ARRAY& PrevOrigin)
 
 void CWhorldView::SetHLSFromRGB()
 {
-	POSITION	pos = m_Ring.GetHeadPosition();
-	while (pos != NULL) {
-		RING&	Ring = m_Ring.GetNext(pos);
+	for(auto pos = m_Ring.begin(); pos != m_Ring.end(); ++pos) {
+        RING& Ring = *pos;
 		int	c = Ring.Color;
 		double	h, l, s;
 		CHLS::rgb2hls(GetRValue(c) / 255.0, GetGValue(c) / 255.0, 
@@ -758,6 +757,9 @@ void CWhorldView::SetCopySpread(int Spread)
 
 static inline void QWCopyDown(void *dest, void *src, DWORD count)
 {
+#ifdef __APPLE__
+    std::copy((DWORD*)src, ((DWORD*)src)+count, (DWORD*)dest);
+#else
 	// overlap is OK provided dest >= src; buffers must be dword-aligned
 	__asm {
 		mov		ecx, count	// number of qwords to copy
@@ -773,6 +775,7 @@ static inline void QWCopyDown(void *dest, void *src, DWORD count)
 		rep		movsd
 		cld					// restore direction flag
 	}
+#endif
 }
 
 static inline bool ftest(const float& f)	// efficiently test float for non-zero
@@ -798,11 +801,50 @@ void CWhorldView::Draw(HDC dc)
 	SetBkColor(dc, m_st.BkColor);
 	CRect	r(0, 0, m_Size.cx, m_Size.cy);
 	ExtTextOut(dc, 0, 0, ETO_OPAQUE, r, NULL, 0, NULL);	// as in CDC::FillSolidRect
+	if (m_st.Convex) {
+        for (auto iter = m_Ring.rbegin(); iter != m_Ring.rend(); iter++) {
+            DrawRing(dc, *iter, iter == m_Ring.rbegin());
+        }
+    } else {
+        for (auto iter = m_Ring.begin(); iter != m_Ring.end(); iter++) {
+            DrawRing(dc, *iter, iter == m_Ring.begin());
+        }
+    }
+    
+    if (m_DelPos != m_Ring.end()) {
+		RING&	rp = *m_DelPos;
+		rp.Delete = TRUE;	// cascade delete
+	}
+    
+#ifndef WHORLDFF
+	if (m_VideoList.IsPlaying()) {
+		CVideo	*vp = &m_VideoList.GetCurVideo();
+		vp->UpdateSurface();
+		CSize	FrmSz(m_Size);
+		CSize	SrcSz(vp->GetFrameSize());
+		CPoint	SrcPt(0, 0);
+		if (m_st.Mirror) {	// only need to blit upper-left quadrant
+			FrmSz.cx = (FrmSz.cx + 1) >> 1;
+			FrmSz.cy = (FrmSz.cy + 1) >> 1;
+			SrcSz.cx = (SrcSz.cx + 1) >> 1;
+			SrcSz.cy = (SrcSz.cy + 1) >> 1;
+			SrcPt.x = SrcSz.cx - round(SrcSz.cx * m_st.VideoOrg.x);
+			SrcPt.y = round(SrcSz.cy * m_st.VideoOrg.y);
+		}
+		HDC	sdc;
+		vp->GetDC(&sdc);
+		StretchBlt(dc, 0, FrmSz.cy - 1, FrmSz.cx, -FrmSz.cy, sdc,
+                   SrcPt.x, SrcPt.y, SrcSz.cx, SrcSz.cy, m_VideoList.GetROP());
+		vp->ReleaseDC(sdc);
+	}
+#endif
+}
+
+
+void CWhorldView::DrawRing(HDC dc, RING& rp, bool isHead)
+{
 	bool	Convex = m_st.Convex;
-	POSITION	HeadPos = m_Ring.GetHeadPosition();
-	POSITION	NextPos = Convex ? m_Ring.GetTailPosition() : HeadPos;
-	POSITION	CurPos = NULL;
-	bool	GotDCPen = FALSE;
+    bool	GotDCPen = FALSE;
 	int		PrevDrawMode = -1;
 	char	PrevReverse = -1;
 	double	PrevRadius = 1e9;
@@ -812,10 +854,8 @@ void CWhorldView::Draw(HDC dc)
 	int		Points;				// number of points in current ring
 	int		PrevPoints = 0;		// number of points in previous ring
 	int		PrevColor = 0;
-	while (NextPos != NULL) {
-		CurPos = NextPos;
-		RING&	rp = Convex ? m_Ring.GetPrev(NextPos) : m_Ring.GetNext(NextPos);
-		DPOINT	org;
+
+    DPOINT	org;
 		org.x = WndCenter.x + rp.Origin.x;
 		org.y = WndCenter.y + rp.Origin.y;
 		CPoint	irorg(round(rp.Origin.x), round(rp.Origin.y));
@@ -946,7 +986,7 @@ void CWhorldView::Draw(HDC dc)
 						StrokeAndFillPath(dc);
 					}
 				} else {
-					if (CurPos == HeadPos) {
+					if (isHead) {
 						BeginPath(dc);
 						if (Convex)
 							SetDCBrushColor(dc, rp.Color);
@@ -972,7 +1012,7 @@ void CWhorldView::Draw(HDC dc)
 						Polygon(dc, m_pa, Points);	// fill innermost ring
 					}
 				} else {
-					if (CurPos == HeadPos) {
+					if (isHead) {
 						if (Convex)
 							SetDCBrushColor(dc, rp.Color);
 						Polygon(dc, m_pa, Points);	// fill innermost ring
@@ -1005,33 +1045,7 @@ void CWhorldView::Draw(HDC dc)
 		PrevColor = rp.Color;
 		PrevCurved = Curved;
 	}
-	if (m_DelPos != NULL) {
-		RING&	rp = m_Ring.GetNext(m_DelPos);
-		rp.Delete = TRUE;	// cascade delete
-	}
-#ifndef WHORLDFF
-	if (m_VideoList.IsPlaying()) {
-		CVideo	*vp = &m_VideoList.GetCurVideo();
-		vp->UpdateSurface();
-		CSize	FrmSz(m_Size);
-		CSize	SrcSz(vp->GetFrameSize());
-		CPoint	SrcPt(0, 0);
-		if (m_st.Mirror) {	// only need to blit upper-left quadrant
-			FrmSz.cx = (FrmSz.cx + 1) >> 1;
-			FrmSz.cy = (FrmSz.cy + 1) >> 1;
-			SrcSz.cx = (SrcSz.cx + 1) >> 1;
-			SrcSz.cy = (SrcSz.cy + 1) >> 1;
-			SrcPt.x = SrcSz.cx - round(SrcSz.cx * m_st.VideoOrg.x);
-			SrcPt.y = round(SrcSz.cy * m_st.VideoOrg.y);
-		}
-		HDC	sdc;
-		vp->GetDC(&sdc);
-		StretchBlt(dc, 0, FrmSz.cy - 1, FrmSz.cx, -FrmSz.cy, sdc,
-			SrcPt.x, SrcPt.y, SrcSz.cx, SrcSz.cy, m_VideoList.GetROP());
-		vp->ReleaseDC(sdc);
-	}
-#endif
-}
+
 
 #ifndef WHORLDFF
 

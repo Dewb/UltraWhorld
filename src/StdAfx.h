@@ -23,6 +23,17 @@
 #if !defined(AFX_STDAFX_H__67434E6E_C31F_4514_855E_7C34DD868F75__INCLUDED_)
 #define AFX_STDAFX_H__67434E6E_C31F_4514_855E_7C34DD868F75__INCLUDED_
 
+#ifdef __APPLE__
+
+#include <Win32Shim.h>
+#include <GDIShim.h>
+
+#elif defined _WIN32 || defined _WIN64
+
+#define CLIST_POSITION(T) POSITION
+#define CARRAY_POSITON(T) POSITION
+#define NULL_POSITON(CONTAINER) NULL
+
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -40,6 +51,8 @@
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
+#endif // __APPLE
+
 // trig macros
 #define PI 3.141592653589793
 #define DTR(x) (x * PI / 180)	// degrees to radians
@@ -51,6 +64,22 @@
 // load string from resource via temporary object
 #define LDS(x) CString((LPCSTR)x)
 
+#ifdef __APPLE__
+#include <cmath>
+/*
+{
+	int		temp;
+    __asm__ __volatile__ (
+    "fistp %0\n\t"
+                          : "=m" (temp)
+                          : "t" (value)
+                          );    
+	return(temp);
+}
+*/
+
+
+#elif defined _WIN32 || defined _WIN64
 // optimized FPU rounding
 inline int round(double x)
 {
@@ -73,6 +102,7 @@ inline int trunc(double x)
 	__asm	fldcw	cw		// restore control word
 	return(temp);
 }
+#endif
 
 // double-precision coordinate
 #include "DPoint.h"
