@@ -27,6 +27,8 @@
 		5B07B6F016F3BAAE00AD1A46 /* Oscillator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B07B69516F2F29E00AD1A46 /* Oscillator.cpp */; };
 		5B07B6F116F3BAE900AD1A46 /* hls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B07B68C16F2F29E00AD1A46 /* hls.cpp */; };
 		5B07B6F216F3BB0300AD1A46 /* ParmInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B07B69816F2F29E00AD1A46 /* ParmInfo.cpp */; };
+		5B7E63DF1779159D000ACD21 /* MainFrm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B07B69016F2F29E00AD1A46 /* MainFrm.cpp */; };
+		5B7E63E017791AEC000ACD21 /* NormVal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B07B69316F2F29E00AD1A46 /* NormVal.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -370,6 +372,8 @@
 				5B07B6F016F3BAAE00AD1A46 /* Oscillator.cpp in Sources */,
 				5B07B6F116F3BAE900AD1A46 /* hls.cpp in Sources */,
 				5B07B6F216F3BB0300AD1A46 /* ParmInfo.cpp in Sources */,
+				5B7E63DF1779159D000ACD21 /* MainFrm.cpp in Sources */,
+				5B7E63E017791AEC000ACD21 /* NormVal.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

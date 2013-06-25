@@ -20,12 +20,16 @@
 #ifndef CMAINFRAME_INCLUDED
 #define CMAINFRAME_INCLUDED
 
-#include "FreeFrame.h"
+//#include "FreeFrame.h"
 #include "Patch.h"
 #include "WhorldView.h"
-#include "SortStringArray.h"
+//#include "SortStringArray.h"
 #include "NormVal.h"
-#include "RealTimer.h"
+//#include "RealTimer.h"
+
+#include <vector>
+#define CANVAS_WIDTH 2048
+#define CANVAS_HEIGHT 2048
 
 struct VideoInfoStructTag;
 
@@ -52,7 +56,7 @@ public:
 		CCrossDlg::INFO		XFader;		// crossfader dialog info
 		CPlaylistDlg::INFO	Playlist;	// playlist dialog info
 		CVideoList::INFO	VideoList;	// video list info
-		CPatch	Patch;		// master patch
+		//CPatch	Patch;		// master patch
 		CParmInfo	GlobParm;	// global parameters
 		int		ViewSel;	// view selection: document or mix
 		int		EditSel;	// edit selection: document, A, B, mix, master offsets
@@ -154,24 +158,26 @@ public:
 	void	ClearScreen();
 	void	RandomPhase();
 	void	SetPatch(const CPatch& Patch);
-	void	GetPatch(CPatch& Patch) const;
-	bool	SavePatch() const;
-	bool	SavePatch(LPCSTR Path) const;
+    void	GetPatch(CPatch& Patch) const;
+	//bool	SavePatch() const;
+	//bool	SavePatch(LPCSTR Path) const;
 
-private:
+protected:
 // Types
 	enum {
 		BANKS = 20
 	};
-	typedef	CArray<CPatch, CPatch&>	PATCH_LIST[BANKS];
-	typedef struct tagMYBITMAPINFO : BITMAPINFO {
-		// The bmiColors array allocates a single DWORD, but in 16-bit mode,
-		// bmiColors needs to contain three DWORDs: one DWORD each for the red,
-		// green and blue color masks.  So we inherit from BITMAPINFO and add 
-		// space for the green and blue masks; the red mask is bmiColors[0].
-		DWORD	GreenMask;
-		DWORD	BlueMask;
-	} MYBITMAPINFO;
+//	typedef	CArray<CPatch, CPatch&>	PATCH_LIST[BANKS];
+    typedef std::vector<CPatch> PATCH_LIST[BANKS];
+    
+//	typedef struct tagMYBITMAPINFO : BITMAPINFO {
+//		// The bmiColors array allocates a single DWORD, but in 16-bit mode,
+//		// bmiColors needs to contain three DWORDs: one DWORD each for the red,
+//		// green and blue color masks.  So we inherit from BITMAPINFO and add 
+//		// space for the green and blue masks; the red mask is bmiColors[0].
+//		DWORD	GreenMask;
+//		DWORD	BlueMask;
+//	} MYBITMAPINFO;
 
 // Constants
 	static const CNormVal		m_NormZoom;
@@ -190,17 +196,17 @@ private:
 	};
 
 // Member data
-	VideoInfoStruct	m_VideoInfo;	// copy of video info passed to Init
+	//VideoInfoStruct	m_VideoInfo;	// copy of video info passed to Init
 	CWhorldView	m_View;			// our view instance
 	PATCH_LIST	m_Patch;		// array of patches, in same order as m_PatchPath
 	CParmInfo	m_ParmInfo;		// current view parameters
 	CParmInfo	m_MastInfo;		// oscillator overrides
-	CRealTimer	m_TempoTimer;	// self-correcting timer based on performance counter
-	MYBITMAPINFO	m_bmi;		// frame DIB info
-	HDC		m_hDC;				// frame DIB device context
-	HBITMAP	m_hDib;				// frame DIB handle
-	void	*m_DibBits;			// frame DIB data
-	HGDIOBJ	m_PrevBm;			// DC's previous bitmap
+	//CRealTimer	m_TempoTimer;	// self-correcting timer based on performance counter
+	//MYBITMAPINFO	m_bmi;		// frame DIB info
+	//HDC		m_hDC;				// frame DIB device context
+	//HBITMAP	m_hDib;				// frame DIB handle
+	//void	*m_DibBits;			// frame DIB data
+	//HGDIOBJ	m_PrevBm;			// DC's previous bitmap
 	LONG	m_FrameBytes;		// size of frame in bytes
 	LONG	m_BytesPerPixel;	// number of bytes per pixel
 	int		m_FrameRate;		// frame rate in frames per second
@@ -221,22 +227,22 @@ private:
 	double	m_PrevHue;			// previous hue: 360 degrees mapped to 0..1
 	double	m_MastOfs[PARM_ROWS];	// master offsets for geometry parameters
 	int		m_PatchMode;		// patch change mode; see enum above
-	CString	m_DocFolder;		// path to folder containing playlist/patches
+	//CString	m_DocFolder;		// path to folder containing playlist/patches
 	CParmInfo	m_GlobParm;		// global parameter info
 	COscillator	m_GlobOsc[PARM_ROWS];	// global oscillators
 	double	m_GlobParmTarg[PARM_ROWS];	// global parameter targets
 
 // Helpers
-	bool	LoadPatches();
-	bool	LoadPlaylist();
-	bool	LoadPlaylist(LPCSTR Path);
-	bool	ReadIniFile();
-	static	bool	GetDocFolder(CString& Folder);
-	static	void	TimerCallback(LPVOID Cookie);
-	static	void	Mirror24(LPVOID pFrame, int w, int h);
-	static	void	Mirror32(LPVOID pFrame, int w, int h);
-	static	void	Mirror16(LPVOID pFrame, int w, int h);
-	static	bool	MakeUniquePath(LPCSTR Folder, LPCSTR Prefix, LPCSTR Extension, CString& Path);
+//	bool	LoadPatches();
+//	bool	LoadPlaylist();
+//	bool	LoadPlaylist(LPCSTR Path);
+//	bool	ReadIniFile();
+//	static	bool	GetDocFolder(CString& Folder);
+//	static	void	TimerCallback(LPVOID Cookie);
+//	static	void	Mirror24(LPVOID pFrame, int w, int h);
+//	static	void	Mirror32(LPVOID pFrame, int w, int h);
+//	static	void	Mirror16(LPVOID pFrame, int w, int h);
+//	static	bool	MakeUniquePath(LPCSTR Folder, LPCSTR Prefix, LPCSTR Extension, CString& Path);
 };
 
 inline int CMainFrame::ParmToEnum(double Val, int Enums)
@@ -252,17 +258,19 @@ inline double CMainFrame::EnumToParm(int Val, int Enums)
 
 inline int CMainFrame::GetWidth() const
 {
-	return(m_VideoInfo.frameWidth);
+	//return(m_VideoInfo.frameWidth);
+    return CANVAS_WIDTH;
 }
 
 inline int CMainFrame::GetHeight() const
 {
-	return(m_VideoInfo.frameHeight);
+	//return(m_VideoInfo.frameHeight);
+    return CANVAS_HEIGHT;
 }
 
 inline int CMainFrame::GetPatchCount() const
 {
-	return(m_Patch[m_BankIdx].GetSize());
+	return(m_Patch[m_BankIdx].size());
 }
 
 inline int CMainFrame::GetCurPatch() const

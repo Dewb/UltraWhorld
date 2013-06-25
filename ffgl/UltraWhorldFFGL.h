@@ -2,9 +2,26 @@
 #include <FFGLPluginSDK.h>
 
 #include <stdafx.h>
-#include <WhorldView.h>
+#include <MainFrm.h>
 
-class UltraWhorldFFGL : public CFreeFrameGLPlugin
+
+enum {
+    NUM_INPUTS = 1,
+    MAX_STRING = 16
+};
+
+typedef struct ParamConstsStructTag {
+    float defaultValue;
+    char name[MAX_STRING + 1];
+} ParamConstantsStruct;
+
+typedef struct ParamDynamicDataStructTag {
+    float value;
+    char displayValue[MAX_STRING];
+} ParamDynamicDataStruct;
+
+
+class UltraWhorldFFGL : public CFreeFrameGLPlugin, CMainFrame
 {
 public:
 	UltraWhorldFFGL();
@@ -42,10 +59,11 @@ public:
         return FF_FAIL;
     }
     
-protected:	
-    
-    CWhorldView m_View;
-    CParmInfo m_ParmInfo;
+protected:
+    ParamDynamicDataStruct m_Param[NUM_PARAMS];
+	bool	m_Bang[NUM_PARAMS];
+
+    bool IsBang(int ParamIdx, double Value);
 };
 
 

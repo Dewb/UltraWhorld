@@ -516,6 +516,7 @@ void CWhorldView::TimerHook(const CParmInfo& Info, const PARMS& GlobParm, double
 	if (m_VideoList.IsPlaying())
 		m_VideoList.GetCurVideo().TimerHook();
 #endif
+    /*
 	double	PrevClock[ROWS];
 	int	i;
 	for (i = 0; i < ROWS; i++) {
@@ -529,12 +530,16 @@ void CWhorldView::TimerHook(const CParmInfo& Info, const PARMS& GlobParm, double
 			m_Osc[i].SetFreq(Info.m_Row[i].Freq);
 		m_FlushHistory = FALSE;
 	}
+     */
 	static const int RG = RING_GROWTH;
 	const ROW	*cur = &Info.m_Row[RG];
-	m_Osc[RG].SetClock(PrevClock[RG] + 1);
-	if (cur->Freq != m_PrevInfo.m_Row[RG].Freq)
-		m_Osc[RG].SetFreq(cur->Freq);
-	m_NewGrowth = (cur->Val + m_Osc[RG].GetVal() * cur->Amp) * Speed;
+	//m_Osc[RG].SetClock(PrevClock[RG] + 1);
+	//if (cur->Freq != m_PrevInfo.m_Row[RG].Freq)
+	//	m_Osc[RG].SetFreq(cur->Freq);
+	//m_NewGrowth = (cur->Val + m_Osc[RG].GetVal() * cur->Amp) * Speed;
+    
+    m_NewGrowth = cur->Val * Speed;
+    
 	double	AbsGrowth = fabs(m_NewGrowth);
 	double	PrevFracTick = 0;
 	while (m_st.RingOffset > 0) {
@@ -542,10 +547,10 @@ void CWhorldView::TimerHook(const CParmInfo& Info, const PARMS& GlobParm, double
 		for (int i = 0; i < ROWS; i++) {
 			const ROW	*prv = &m_PrevInfo.m_Row[i];
 			const ROW	*cur = &Info.m_Row[i];
-			m_Osc[i].SetClock(PrevClock[i] + FracTick);
+			//m_Osc[i].SetClock(PrevClock[i] + FracTick);
 			double	Amp = prv->Amp + (cur->Amp - prv->Amp) * FracTick;
 			((double *)&m_Parms)[i] = prv->Val + (cur->Val - prv->Val) * FracTick
-				+ m_Osc[i].GetVal() * Amp;
+				/* + m_Osc[i].GetVal() * Amp */ ;
 		}
 		m_Parms.RingGrowth *= Speed;
 		m_Parms.ColorSpeed *= Speed;
@@ -556,7 +561,8 @@ void CWhorldView::TimerHook(const CParmInfo& Info, const PARMS& GlobParm, double
 	}
 	m_st.RingOffset += AbsGrowth;
 	m_Parms.RingGrowth = m_NewGrowth;
-	m_Osc[RG].SetClock(PrevClock[RG] + 1);
+	/*
+    m_Osc[RG].SetClock(PrevClock[RG] + 1);
 	for (i = 1; i < ROWS; i++) {	// skip ring growth; assume it's first row
 		const ROW	*cur = &Info.m_Row[i];
 		m_Osc[i].SetClock(PrevClock[i] + 1);
@@ -564,6 +570,7 @@ void CWhorldView::TimerHook(const CParmInfo& Info, const PARMS& GlobParm, double
 			m_Osc[i].SetFreq(cur->Freq);
 		((double *)&m_Parms)[i] = cur->Val + m_Osc[i].GetVal() * cur->Amp;
 	}
+    */
 	m_Parms.ColorSpeed *= Speed;
 	UpdateHue(1 - PrevFracTick);
 	double	r, g, b;

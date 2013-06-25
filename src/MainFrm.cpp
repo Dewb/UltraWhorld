@@ -20,11 +20,12 @@
 */
 
 #include <stdafx.h>
-#include "FreeFrame.h"
+#include <FFGLPluginSDK.h>
+//#include "FreeFrame.h"
 #include "MainFrm.h"
-#include "PathStr.h"
+//#include "PathStr.h"
 #include <math.h>
-#include "Playlist.h"
+//#include "Playlist.h"
 
 //												Offset	Scale	LogBase
 const CNormVal		CMainFrame::m_NormSpeed(	.5,		2,		20);
@@ -42,14 +43,14 @@ static const double DAMP_TOLER = 1e-3;
 
 CMainFrame::CMainFrame()
 {
-	ZeroMemory(&m_VideoInfo, sizeof(m_VideoInfo));
+	//ZeroMemory(&m_VideoInfo, sizeof(m_VideoInfo));
 	m_ParmInfo.SetDefaults();
 	m_MastInfo.SetDefaults();
-	ZeroMemory(&m_bmi, sizeof(m_bmi));
-	m_hDC = NULL;
-	m_hDib = NULL;
-	m_DibBits = NULL;
-	m_PrevBm = NULL;
+	//ZeroMemory(&m_bmi, sizeof(m_bmi));
+	//m_hDC = NULL;
+	//m_hDib = NULL;
+	//m_DibBits = NULL;
+	//m_PrevBm = NULL;
 	m_FrameBytes = 0;
 	m_BytesPerPixel = 0;
 	m_FrameRate = 25;	// how do we know our frame rate?
@@ -68,21 +69,21 @@ CMainFrame::CMainFrame()
 	m_Clock = 0;
 	m_PrevClock = 0;
 	m_PrevHue = 0;
-	m_TempoTimer.Launch(TimerCallback, this, THREAD_PRIORITY_TIME_CRITICAL);
-	m_TempoTimer.Run(TRUE);
+	//m_TempoTimer.Launch(TimerCallback, this, THREAD_PRIORITY_TIME_CRITICAL);
+	//m_TempoTimer.Run(TRUE);
 	ZeroMemory(m_MastOfs, sizeof(m_MastOfs));
 	m_PatchMode = PM_FULL;
-	GetDocFolder(m_DocFolder);
+	//GetDocFolder(m_DocFolder);
 	ZeroMemory(&m_GlobParm, sizeof(m_GlobParm));
 	ZeroMemory(&m_GlobParmTarg, sizeof(m_GlobParmTarg));
 }
 
 CMainFrame::~CMainFrame()
 {
-	if (m_PrevBm != NULL)
-		SelectObject(m_hDC, m_PrevBm);	// restore DC's previous bitmap
-	DeleteObject(m_hDib);
-	DeleteObject(m_hDC);
+//	if (m_PrevBm != NULL)
+//		SelectObject(m_hDC, m_PrevBm);	// restore DC's previous bitmap
+//	DeleteObject(m_hDib);
+//	DeleteObject(m_hDC);
 }
 
 void CMainFrame::SetZoom(double Zoom)
@@ -110,7 +111,7 @@ void CMainFrame::SetRings(double Rings)
 
 void CMainFrame::SetTempo(double Tempo)
 {
-	m_TempoTimer.SetFreq(float(Tempo / 60.0), TRUE);
+	//m_TempoTimer.SetFreq(float(Tempo / 60.0), TRUE);
 	m_Tempo = Tempo;
 }
 
@@ -146,6 +147,7 @@ void CMainFrame::RandomPhase()
 		m_View.SetPhase(i, double(rand()) / RAND_MAX);
 }
 
+/*
 bool CMainFrame::Init(const VideoInfoStruct& videoInfo)
 {
 	m_VideoInfo = videoInfo;
@@ -203,8 +205,10 @@ bool CMainFrame::Init(const VideoInfoStruct& videoInfo)
 	}
 	return(TRUE);
 }
+*/
 
-bool CMainFrame::GetDocFolder(CString& Folder)
+/*
+ bool CMainFrame::GetDocFolder(CString& Folder)
 {
 	CPathStr	Path;
 	char	*p = Path.GetBuffer(MAX_PATH);
@@ -319,6 +323,7 @@ bool CMainFrame::LoadPlaylist(LPCSTR Path)
 	}
 	return(FALSE);
 }
+*/
 
 bool CMainFrame::SetCurBank(int BankIdx)
 {
@@ -333,7 +338,7 @@ bool CMainFrame::SetCurBank(int BankIdx)
 
 bool CMainFrame::SetCurPatch(int PatchIdx)
 {
-	if (PatchIdx < 0 || PatchIdx >= m_Patch[m_BankIdx].GetSize())
+	if (PatchIdx < 0 || PatchIdx >= m_Patch[m_BankIdx].size())
 		return(FALSE);
 	if (PatchIdx == m_PatchIdx)	// if patch is already selected
 		return(TRUE);	// nothing to do
@@ -402,6 +407,7 @@ void CMainFrame::GetPatch(CPatch& Patch) const
 	Patch.m_Main.ZoomCenter = GetZoomCenter();
 }
 
+/*
 bool CMainFrame::SavePatch(LPCSTR Path) const
 {
 	if (m_PatchIdx < 0)
@@ -452,6 +458,7 @@ bool CMainFrame::MakeUniquePath(LPCSTR Folder, LPCSTR Prefix, LPCSTR Extension, 
 	Path = ps;
 	return(TRUE);
 }
+*/
 
 DWORD CMainFrame::processFrame(LPVOID pFrame)
 {
@@ -495,7 +502,7 @@ DWORD CMainFrame::processFrame(LPVOID pFrame)
 		Info.m_Row[i].Freq *= m_Speed;	// compensate frequency for master speed
 	}
 	CWhorldView::PARMS	GlobParm;		// global parameter values
-	for (i = 0; i < GLOBAL_PARMS; i++) {
+	for (int i = 0; i < GLOBAL_PARMS; i++) {
 		int	gpi = CParmInfo::m_GlobParm[i];
 		CParmInfo::ROW& GlobRow = m_GlobParm.m_Row[gpi];
 		if (m_GlobParmTarg[gpi] != GlobRow.Val) {	// if target differs from value
@@ -513,26 +520,27 @@ DWORD CMainFrame::processFrame(LPVOID pFrame)
 			((double *)&GlobParm)[gpi] = GlobRow.Val;
 	}
 	m_View.TimerHook(Info, GlobParm, m_Speed * m_GrowDir);
-	m_View.Draw(m_hDC);
+	m_View.Draw(NULL);
 	// the following assumes pFrame layout matches DIB layout
-	if (IsMirrored()) {
-		memcpy(pFrame, m_DibBits, m_FrameBytes / 2);	// skip bottom half
-		switch (m_VideoInfo.bitDepth) {
-		case FF_CAP_16BITVIDEO:
-			Mirror16(pFrame, GetWidth(), GetHeight());
-			break;
-		case FF_CAP_24BITVIDEO:
-			Mirror24(pFrame, GetWidth(), GetHeight());
-			break;
-		case FF_CAP_32BITVIDEO:
-			Mirror32(pFrame, GetWidth(), GetHeight());
-			break;
-		}
-	} else
-		memcpy(pFrame, m_DibBits, m_FrameBytes);
+//	if (IsMirrored()) {
+//		memcpy(pFrame, m_DibBits, m_FrameBytes / 2);	// skip bottom half
+//		switch (m_VideoInfo.bitDepth) {
+//		case FF_CAP_16BITVIDEO:
+//			Mirror16(pFrame, GetWidth(), GetHeight());
+//			break;
+//		case FF_CAP_24BITVIDEO:
+//			Mirror24(pFrame, GetWidth(), GetHeight());
+//			break;
+//		case FF_CAP_32BITVIDEO:
+//			Mirror32(pFrame, GetWidth(), GetHeight());
+//			break;
+//		}
+//	} else
+//		memcpy(pFrame, m_DibBits, m_FrameBytes);
 	return(FF_SUCCESS);
 }
 
+/*
 void CMainFrame::TimerCallback(LPVOID Cookie)
 {
 	((CMainFrame *)Cookie)->m_Clock++;	// trigger random jump
@@ -651,3 +659,4 @@ void CMainFrame::Mirror16(LPVOID pFrame, int w, int h)
 		dst -= hw;
 	}
 }
+*/

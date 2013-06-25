@@ -58,10 +58,10 @@ public:
 
 // Operations
 	void	SetDefaults();
-	bool	Read(CStdioFile& fp);
-	bool	Read(LPCTSTR Path);
-	bool	Write(CStdioFile& fp) const;
-	bool	Write(LPCTSTR Path) const;
+//	bool	Read(CStdioFile& fp);
+//	bool	Read(LPCTSTR Path);
+//	bool	Write(CStdioFile& fp) const;
+//	bool	Write(LPCTSTR Path) const;
 	void	operator=(const CParmInfo& Info);
 
 private:

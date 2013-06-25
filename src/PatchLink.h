@@ -20,7 +20,7 @@
 #ifndef CPATCHLINK_INCLUDED
 #define CPATCHLINK_INCLUDED
 
-#include <afxtempl.h>
+//#include <afxtempl.h>
 
 class CPatchLink : public CObject {
 public:
@@ -40,10 +40,10 @@ private:
 	void	Copy(const CPatchLink& Src);
 };
 
-template<> inline void AFXAPI SerializeElements<CPatchLink>(CArchive& ar, CPatchLink *pObj, int nCount)
-{	// specialize to prevent collections from bitwise copying CString
-	for (int i = 0; i < nCount; i++, pObj++)
-		pObj->Serialize(ar);
-}
+//template<> inline void AFXAPI SerializeElements<CPatchLink>(CArchive& ar, CPatchLink *pObj, int nCount)
+//{	// specialize to prevent collections from bitwise copying CString
+//	for (int i = 0; i < nCount; i++, pObj++)
+//		pObj->Serialize(ar);
+//}
 
 #endif

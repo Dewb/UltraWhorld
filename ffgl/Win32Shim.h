@@ -32,9 +32,11 @@ typedef uint32_t DWORD;
 typedef int BOOL;
 typedef int INT;
 typedef unsigned int UINT;
+typedef void* LPVOID;
 
 typedef DWORD COLORREF;
 typedef DWORD* LPCOLORREF;
+typedef double DOUBLE;
 
 #define RGB(r, g ,b)  ((DWORD) (((BYTE) (r) | \
 ((WORD) (g) << 8)) | \
