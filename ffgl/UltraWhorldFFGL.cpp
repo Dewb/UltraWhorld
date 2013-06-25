@@ -34,7 +34,6 @@ UltraWhorldFFGL::UltraWhorldFFGL()
 DWORD UltraWhorldFFGL::InitGL(const FFGLViewportStruct *vp)
 {
     m_View.SetWndSize(CSize(CANVAS_WIDTH, CANVAS_HEIGHT));
-
     return FF_SUCCESS;
 }
 
@@ -47,8 +46,8 @@ DWORD UltraWhorldFFGL::ProcessOpenGL(ProcessOpenGLStruct *pGL)
 {
     glPushMatrix();
     
-    CWhorldView::PARMS	GlobParm;
     processFrame(NULL);
+    
     glFlush();
     glPopMatrix();
  

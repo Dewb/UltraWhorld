@@ -17,23 +17,33 @@
 #define CanvasY2GL(y) y/(1.0*CANVAS_HEIGHT) - 0.5
 
 
+static COLORREF g_bkColor = 0;
+static COLORREF g_penColor = 0;
+static COLORREF g_brushColor = 0;
+
 int SetROP2(HDC hdc, int fnDrawMode) {
     return 0;
 }
 
 COLORREF SetBkColor(HDC hdc, COLORREF color) {
-    glClearColor(GetRValue(color) / 255.0, GetGValue(color) / 255.0, GetBValue(color) / 255.0, 1.0);
-    return color;
+    //glClearColor(GetRValue(color) / 255.0, GetGValue(color) / 255.0, GetBValue(color) / 255.0, 1.0);
+    COLORREF oldColor = g_bkColor;
+    g_bkColor = color;
+    return oldColor;
 }
 
 COLORREF SetDCPenColor(HDC hdc, COLORREF color) {
-    glColor3ub(GetRValue(color), GetGValue(color), GetBValue(color));
-    return color;
+    //glColor3ub(GetRValue(color), GetGValue(color), GetBValue(color));
+    COLORREF oldColor = g_penColor;
+    g_penColor = color;
+    return oldColor;
 }
 
 COLORREF SetDCBrushColor(HDC hdc, COLORREF color) {
-    glColor3ub(GetRValue(color), GetGValue(color), GetBValue(color));
-    return color;
+    //glColor3ub(GetRValue(color), GetGValue(color), GetBValue(color));
+    COLORREF oldColor = g_brushColor;
+    g_brushColor = color;
+    return oldColor;
 }
 
 HGDIOBJ SelectObject(HDC hdc, HGDIOBJ object) {
@@ -81,12 +91,24 @@ BOOL PolyBezier(HDC hdc, const POINT* lppt, DWORD cPoints) {
 }
 
 BOOL Polyline(HDC hdc, const POINT* lppt, DWORD cPoints) {
-    glBegin(GL_LINES);
-    for(int ii=0; ii < cPoints; ii++) {
-        glVertex2f(CanvasX2GL(lppt[ii].x),
-                   CanvasY2GL(lppt[ii].y));
+    for (int pass = 0; pass < 2; pass++) {
+        if (pass == 0) {
+            glColor3ub(GetRValue(g_penColor), GetGValue(g_penColor), GetBValue(g_penColor));
+            glBegin(GL_LINES);
+        } else {
+            glColor3ub(GetRValue(g_bkColor), GetGValue(g_bkColor), GetBValue(g_bkColor));
+            glBegin(GL_POLYGON);
+        }
+        for(int ii=0; ii < cPoints; ii++) {
+            glVertex2f(CanvasX2GL(lppt[ii].x),
+                       CanvasY2GL(lppt[ii].y));
+            if (ii + 1 < cPoints ) {
+                glVertex2f(CanvasX2GL(lppt[ii+1].x),
+                           CanvasY2GL(lppt[ii+1].y));
+            }
+        }
+        glEnd();
     }
-    glEnd();
     return TRUE;
 }
 
@@ -100,6 +122,7 @@ BOOL CGdiObject::DeleteObject() {
 }
 
 HGDIOBJ CPen::CreatePen(int nPenStyle, int nWidth, COLORREF crColor) {
+    glLineWidth(nWidth * 4.0);
     return NULL;
 }
 

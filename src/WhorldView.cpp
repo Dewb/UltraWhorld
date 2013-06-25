@@ -808,7 +808,7 @@ void CWhorldView::Draw(HDC dc)
 	SetBkColor(dc, m_st.BkColor);
 	CRect	r(0, 0, m_Size.cx, m_Size.cy);
 	ExtTextOut(dc, 0, 0, ETO_OPAQUE, r, NULL, 0, NULL);	// as in CDC::FillSolidRect
-	if (m_st.Convex) {
+	if (!m_st.Convex) {
         for (auto iter = m_Ring.rbegin(); iter != m_Ring.rend(); iter++) {
             DrawRing(dc, *iter, iter == m_Ring.rbegin());
         }
