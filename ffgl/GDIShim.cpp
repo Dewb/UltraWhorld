@@ -91,24 +91,17 @@ BOOL PolyBezier(HDC hdc, const POINT* lppt, DWORD cPoints) {
 }
 
 BOOL Polyline(HDC hdc, const POINT* lppt, DWORD cPoints) {
-    for (int pass = 0; pass < 2; pass++) {
-        if (pass == 0) {
-            glColor3ub(GetRValue(g_penColor), GetGValue(g_penColor), GetBValue(g_penColor));
-            glBegin(GL_LINES);
-        } else {
-            glColor3ub(GetRValue(g_bkColor), GetGValue(g_bkColor), GetBValue(g_bkColor));
-            glBegin(GL_POLYGON);
-        }
-        for(int ii=0; ii < cPoints; ii++) {
+    glBegin(GL_LINES);
+    glColor3ub(GetRValue(g_penColor), GetGValue(g_penColor), GetBValue(g_penColor));
+    for(int ii=0; ii < cPoints; ii++) {
+        if (ii + 1 < cPoints) {
             glVertex2f(CanvasX2GL(lppt[ii].x),
                        CanvasY2GL(lppt[ii].y));
-            if (ii + 1 < cPoints ) {
-                glVertex2f(CanvasX2GL(lppt[ii+1].x),
-                           CanvasY2GL(lppt[ii+1].y));
-            }
+            glVertex2f(CanvasX2GL(lppt[ii+1].x),
+                       CanvasY2GL(lppt[ii+1].y));
         }
-        glEnd();
     }
+    glEnd();
     return TRUE;
 }
 
