@@ -51,7 +51,17 @@ DWORD UltraWhorldFFGL::ProcessOpenGL(ProcessOpenGLStruct *pGL)
     glFlush();
     glPopMatrix();
  
-    m_Clock++;
+    return FF_SUCCESS;
+}
+
+DWORD UltraWhorldFFGL::SetTime(double time)
+{
+    double delta = time - m_lastTime;
+    double t = delta / (m_Tempo/60.0);
+    int ticks = floor(t);
+    m_Clock += ticks;
+    m_lastTime = time - (t - ticks);
+    
     return FF_SUCCESS;
 }
 

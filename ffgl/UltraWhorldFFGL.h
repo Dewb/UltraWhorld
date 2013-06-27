@@ -46,6 +46,7 @@ public:
 	DWORD	ProcessOpenGL(ProcessOpenGLStruct* pGL);
     DWORD InitGL(const FFGLViewportStruct *vp);
     DWORD DeInitGL();
+    virtual DWORD SetTime(double time);
     
 	///////////////////////////////////////////////////
 	// Factory method
@@ -64,6 +65,7 @@ protected:
 	bool	m_Bang[NUM_PARAMS];
 
     bool IsBang(int ParamIdx, double Value);
+    double m_lastTime;
 };
 
 
