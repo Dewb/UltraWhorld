@@ -86,20 +86,42 @@ BOOL Polygon(HDC hdc, const POINT* lpPoints, int nCount) {
     return TRUE;
 }
 
+//#define BEZIER_SUBDIVISIONS 30
+//static GLfloat bezierBuffer[302*3]; // MAX_POINTS from WhorldView.h
+
 BOOL PolyBezier(HDC hdc, const POINT* lppt, DWORD cPoints) {
-    return Polyline(hdc, lppt, cPoints);
+    Polyline(hdc, lppt, cPoints);
+/*
+    glColor3ub(GetRValue(g_penColor), GetGValue(g_penColor), GetBValue(g_penColor));
+    
+    for (int i = 0; i < cPoints; i++) {
+        bezierBuffer[3 * i + 0] = CanvasX2GL(lppt[i].x);
+        bezierBuffer[3 * i + 1] = CanvasY2GL(lppt[i].y);
+        bezierBuffer[3 * i + 2] = 0.0;
+    }
+
+    glMap1f(GL_MAP1_VERTEX_3, 0.0, BEZIER_SUBDIVISIONS, 3, cPoints, &(bezierBuffer[0]));
+    glEnable(GL_MAP1_VERTEX_3);
+    
+	glBegin(GL_LINE_STRIP);
+	for (int t = 0; t <= BEZIER_SUBDIVISIONS; t++)
+	{
+		glEvalCoord1f((GLfloat)t);
+	}
+    
+	glEnd();
+    glFlush();
+ */
+    
 }
 
 BOOL Polyline(HDC hdc, const POINT* lppt, DWORD cPoints) {
-    glBegin(GL_LINES);
     glColor3ub(GetRValue(g_penColor), GetGValue(g_penColor), GetBValue(g_penColor));
-    for(int ii=0; ii < cPoints; ii++) {
-        if (ii + 1 < cPoints) {
-            glVertex2f(CanvasX2GL(lppt[ii].x),
-                       CanvasY2GL(lppt[ii].y));
-            glVertex2f(CanvasX2GL(lppt[ii+1].x),
-                       CanvasY2GL(lppt[ii+1].y));
-        }
+    glBegin(GL_LINE_STRIP);
+    for(int ii = 0; ii < cPoints; ii++) {
+        glVertex3f(CanvasX2GL(lppt[ii].x),
+                   CanvasY2GL(lppt[ii].y),
+                   0);
     }
     glEnd();
     return TRUE;
