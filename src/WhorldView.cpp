@@ -676,6 +676,9 @@ void CWhorldView::LoopHue(bool Enable)
 
 void CWhorldView::SetHueLoopLength(double Length)
 {
+    if (m_st.HueLoopLength == Length)
+        return;
+    
 	if (m_st.HueLoop) {	// try to avoid hue jump
 		m_st.HueLoopPos = m_st.HueLoopLength ?
 			Reflect(m_st.HueLoopPos, m_st.HueLoopLength) : 0;
@@ -744,6 +747,9 @@ void CWhorldView::SetHLSFromRGB()
 
 void CWhorldView::SetCopyCount(int Count)
 {
+    if (m_CopyCount == Count)
+        return;
+    
 	m_CopyCount = Count;
 	if (Count > 1) {
 		m_CopyDelta = PI * 2 / Count;

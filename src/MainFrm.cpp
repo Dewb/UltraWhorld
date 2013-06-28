@@ -137,6 +137,9 @@ void CMainFrame::SetOriginNorm(const DPOINT& Origin)
 
 void CMainFrame::SetGlobalHue(double Hue)
 {
+    if (Hue == m_PrevHue)
+        return;
+    
 	m_View.RotateHue(Hue - m_PrevHue);
 	m_PrevHue = Hue;
 }
