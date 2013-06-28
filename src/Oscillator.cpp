@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "Oscillator.h"
 #include <math.h>
+#include <cstdlib>
 
 const double COscillator::pi = 3.141592653589793;
 
