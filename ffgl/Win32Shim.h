@@ -13,6 +13,9 @@
 #include <list>
 #include <algorithm>
 
+#define CANVAS_WIDTH 2048
+#define CANVAS_HEIGHT 2048
+
 class CView {
     
 };

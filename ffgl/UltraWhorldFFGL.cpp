@@ -37,6 +37,8 @@ UltraWhorldFFGL::UltraWhorldFFGL()
 
 FFResult UltraWhorldFFGL::InitGL(const FFGLViewportStruct *vp)
 {
+    renderWidth = vp->width;
+    renderHeight = vp->height;
     m_View.SetWndSize(CSize(CANVAS_WIDTH, CANVAS_HEIGHT));
     return FF_SUCCESS;
 }
@@ -51,7 +53,9 @@ FFResult UltraWhorldFFGL::ProcessOpenGL(ProcessOpenGLStruct *pGL)
     SetTime(getTicks()/1000.0);
 
     glPushMatrix();
+    GDIShim_BeginFrame(renderWidth, renderHeight);
     processFrame(NULL);
+    GDIShim_EndFrame();
     
     glFlush();
     glPopMatrix();
@@ -251,4 +255,9 @@ FFResult UltraWhorldFFGL::SetFloatParameter(unsigned int index, float val)
     }
 	
 	return FF_FAIL;
+}
+
+unsigned int UltraWhorldFFGL::Resize(const FFGLViewportStruct *vp) {
+    renderWidth = vp->width;
+    renderHeight = vp->height;
 }

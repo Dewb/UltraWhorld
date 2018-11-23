@@ -56,5 +56,7 @@ public:
     HGDIOBJ CreatePen(int nPenStyle, int nWidth, COLORREF crColor);
 };
 
+void GDIShim_BeginFrame(int renderHeight, int renderWidth);
+void GDIShim_EndFrame();
 
 #endif /* defined(__UltraWhorldFFGL__GDIShim__) */

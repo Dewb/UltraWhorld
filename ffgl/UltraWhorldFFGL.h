@@ -51,6 +51,8 @@ public:
     FFResult InitGL(const FFGLViewportStruct *vp);
     FFResult DeInitGL();
     virtual DWORD SetTime(double time);
+    virtual unsigned int Resize(const FFGLViewportStruct *vp);
+
     
 	///////////////////////////////////////////////////
 	// Factory method
@@ -70,6 +72,9 @@ protected:
 
     bool IsBang(int ParamIdx, double Value);
     double m_lastTime;
+
+    GLuint renderWidth, renderHeight;
+
 };
 
 

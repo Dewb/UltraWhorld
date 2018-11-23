@@ -26,10 +26,10 @@
 //#include "SortStringArray.h"
 #include "NormVal.h"
 //#include "RealTimer.h"
+#include "Win32Shim.h"
 
 #include <vector>
-#define CANVAS_WIDTH 2048
-#define CANVAS_HEIGHT 2048
+
 
 struct VideoInfoStructTag;
 

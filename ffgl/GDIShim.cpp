@@ -8,15 +8,16 @@
 
 #include "GDIShim.h"
 #include "FFGL.h"
-#include <functional>
 
-// keep these in sync with MainFrm.h definitions (or pull out into proper header)
-#define CANVAS_WIDTH 4096
-#define CANVAS_HEIGHT 4096
+#include "nanovg.h"
+#define NANOVG_GL2_IMPLEMENTATION
+#include "nanovg_gl.h"
+
+#include <functional>
 
 #define CanvasX2GL(x) x/(1.0*CANVAS_WIDTH) - 0.5
 #define CanvasY2GL(y) y/(1.0*CANVAS_HEIGHT) - 0.5
-#define CanvasPenWidth2GL(p) p/(1.0*CANVAS_WIDTH) * 400.0
+#define CanvasPenWidth2GL(p) p * CANVAS_WIDTH
 
 #define MAX_GDI_HANDLES 256
 
@@ -30,14 +31,21 @@ public:
 
     GdiImpl() {
         handles.resize(MAX_GDI_HANDLES, nullptr);
-        
+
+        vg = nullptr;
+
         // DC_PEN
-        createNewObject([]{
-            glLineWidth(CanvasPenWidth2GL(1.0));
-            glColor3ub(GetRValue(GdiImpl::dcPenColor),
-                       GetGValue(GdiImpl::dcPenColor),
-                       GetBValue(GdiImpl::dcPenColor));
+        createNewObject([this]{
+
+            NVGcolor color = nvgRGB(GetRValue(GdiImpl::dcPenColor),
+                                    GetGValue(GdiImpl::dcPenColor),
+                                    GetBValue(GdiImpl::dcPenColor));
+            nvgStrokeColor(vg, color);
+            nvgStrokeWidth(vg, 1.0);
+
         });
+
+
     }
     
     HGDIOBJ createNewObject(SelectionFunc fn) {
@@ -64,9 +72,11 @@ public:
             }
         }
     }
-        
+
+    struct NVGcontext* vg;
 protected:
     std::vector<SelectionFunc> handles;
+
 };
 
 COLORREF GdiImpl::bkColor = 0;
@@ -74,6 +84,18 @@ COLORREF GdiImpl::dcPenColor = 0;
 COLORREF GdiImpl::dcBrushColor = 0;
 
 GdiImpl gdi;
+
+
+void GDIShim_BeginFrame(int framebufferWidth, int framebufferHeight) {
+    if (!gdi.vg) {
+        gdi.vg = nvgCreateGL2(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+    }
+    nvgBeginFrame(gdi.vg, CANVAS_WIDTH, CANVAS_HEIGHT, framebufferHeight/(1.0*CANVAS_HEIGHT));
+}
+
+void GDIShim_EndFrame() {
+    nvgEndFrame(gdi.vg);
+}
 
 int SetROP2(HDC hdc, int fnDrawMode) {
     return 0;
@@ -133,45 +155,32 @@ BOOL PolyPolygon(HDC hdc, const POINT* lpPoints, const int* lpPolyCounts, int nC
 }
 
 BOOL Polygon(HDC hdc, const POINT* lpPoints, int nCount) {
-    glBegin(GL_LINE_LOOP);
+    nvgBeginPath(gdi.vg);
     for(int ii=0; ii < nCount; ii++) {
-        glVertex2f(CanvasX2GL(lpPoints[ii].x), CanvasY2GL(lpPoints[ii].y));
+        nvgLineTo(gdi.vg, lpPoints[ii].x, lpPoints[ii].y);
     }
-    glVertex2f(CanvasX2GL(lpPoints[0].x), CanvasY2GL(lpPoints[0].y));
-    glEnd();
+    nvgClosePath(gdi.vg);
+    nvgStroke(gdi.vg);
     return TRUE;
 }
 
-#define BEZIER_SUBDIVISIONS 40
-
 BOOL PolyBezier(HDC hdc, const POINT* lppt, DWORD cPoints) {
-    GLfloat bezierBuffer[4*3];
-    glEnable(GL_MAP1_VERTEX_3);
-    for (int i = 0; i < cPoints-2; i += 3) {
-        for (int p = 0; p < 4; p++) {
-            bezierBuffer[3 * p + 0] = CanvasX2GL(lppt[i + p].x);
-            bezierBuffer[3 * p + 1] = CanvasY2GL(lppt[i + p].y);
-            bezierBuffer[3 * p + 2] = 0.0;
-        }
-        
-        glMap1f(GL_MAP1_VERTEX_3, 0.0, BEZIER_SUBDIVISIONS, 3, 4, bezierBuffer);
-        glBegin(GL_LINE_STRIP);
-        for (int t = 0; t <= BEZIER_SUBDIVISIONS; t++) {
-            glEvalCoord1f((GLfloat)t);
-        }
-        glEnd();
+    nvgBeginPath(gdi.vg);
+    nvgMoveTo(gdi.vg, lppt[0].x, lppt[0].y);
+    for (int i = 1; i < cPoints-2; i += 3) {
+        nvgBezierTo(gdi.vg, lppt[i].x, lppt[i].y, lppt[i+1].x, lppt[i+1].y, lppt[i+2].x, lppt[i+2].y);
     }
+    nvgStroke(gdi.vg);
     return TRUE;
 }
 
 BOOL Polyline(HDC hdc, const POINT* lppt, DWORD cPoints) {
-    glBegin(GL_LINE_STRIP);
-    for(int ii = 0; ii < cPoints; ii++) {
-        glVertex3f(CanvasX2GL(lppt[ii].x),
-                   CanvasY2GL(lppt[ii].y),
-                   0);
+    nvgBeginPath(gdi.vg);
+    nvgMoveTo(gdi.vg, lppt[0].x, lppt[0].y);
+    for(int ii = 1; ii < cPoints; ii++) {
+        nvgLineTo(gdi.vg, lppt[ii].x, lppt[ii].y);
     }
-    glEnd();
+    nvgStroke(gdi.vg);
     return TRUE;
 }
 
@@ -190,10 +199,11 @@ HGDIOBJ CPen::CreatePen(int nPenStyle, int nWidth, COLORREF crColor) {
         gdi.deleteObject(_handle);
     }
     _handle = gdi.createNewObject([=] () {
-        glLineWidth(CanvasPenWidth2GL(nWidth));
-        glColor3ub(GetRValue(crColor),
-                   GetGValue(crColor),
-                   GetBValue(crColor));
+        NVGcolor color = nvgRGB(GetRValue(crColor),
+                                GetGValue(crColor),
+                                GetBValue(crColor));
+        nvgStrokeColor(gdi.vg, color);
+        nvgStrokeWidth(gdi.vg, nWidth);
     });
     return _handle;
 }
