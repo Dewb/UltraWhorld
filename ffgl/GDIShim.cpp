@@ -7,12 +7,12 @@
 //
 
 #include "GDIShim.h"
-#include <FFGL.h>
+#include "FFGL.h"
 #include <functional>
 
 // keep these in sync with MainFrm.h definitions (or pull out into proper header)
-#define CANVAS_WIDTH 2048
-#define CANVAS_HEIGHT 2048
+#define CANVAS_WIDTH 4096
+#define CANVAS_HEIGHT 4096
 
 #define CanvasX2GL(x) x/(1.0*CANVAS_WIDTH) - 0.5
 #define CanvasY2GL(y) y/(1.0*CANVAS_HEIGHT) - 0.5
@@ -52,13 +52,13 @@ public:
     
     void deleteObject(HGDIOBJ obj) {
         if (obj != nullptr) {
-            handles[((int)obj)-1] = nullptr;
+            handles[((size_t)obj)-1] = nullptr;
         }
     }
     
     void selectObject(HGDIOBJ obj) {
         if (obj != nullptr) {
-            SelectionFunc fn = handles[((int)obj)-1];
+            SelectionFunc fn = handles[((size_t)obj)-1];
             if (fn) {
                 fn();
             }
@@ -135,9 +135,9 @@ BOOL PolyPolygon(HDC hdc, const POINT* lpPoints, const int* lpPolyCounts, int nC
 BOOL Polygon(HDC hdc, const POINT* lpPoints, int nCount) {
     glBegin(GL_LINE_LOOP);
     for(int ii=0; ii < nCount; ii++) {
-        glVertex2i(lpPoints[ii].x, lpPoints[ii].y);
+        glVertex2f(CanvasX2GL(lpPoints[ii].x), CanvasY2GL(lpPoints[ii].y));
     }
-    glVertex2i(lpPoints[0].x, lpPoints[0].y);
+    glVertex2f(CanvasX2GL(lpPoints[0].x), CanvasY2GL(lpPoints[0].y));
     glEnd();
     return TRUE;
 }

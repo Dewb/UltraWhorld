@@ -25,8 +25,8 @@
 
 #ifdef __APPLE__
 
-#include <Win32Shim.h>
-#include <GDIShim.h>
+#include "Win32Shim.h"
+#include "GDIShim.h"
 
 #elif defined _WIN32 || defined _WIN64
 

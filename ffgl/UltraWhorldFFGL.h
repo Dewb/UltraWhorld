@@ -1,8 +1,8 @@
-#include <FFGLShader.h>
-#include <FFGLPluginSDK.h>
+#include "FFGLShader.h"
+#include "FFGLPluginSDK.h"
 
-#include <stdafx.h>
-#include <MainFrm.h>
+#include "stdafx.h"
+#include "../src/MainFrm.h"
 
 
 enum {
@@ -41,11 +41,15 @@ public:
 	// FreeFrameGL plugin methods
 	///////////////////////////////////////////////////
 	
-	DWORD	SetParameter(const SetParameterStruct* pParam);
-	DWORD	GetParameter(DWORD dwIndex);
-	DWORD	ProcessOpenGL(ProcessOpenGLStruct* pGL);
-    DWORD InitGL(const FFGLViewportStruct *vp);
-    DWORD DeInitGL();
+	//DWORD	SetParameter(const SetParameterStruct* pParam);
+	//DWORD	GetParameter(DWORD dwIndex);
+
+    FFResult SetFloatParameter(unsigned int index, float value);
+    float GetFloatParameter(unsigned int index);
+
+	FFResult	ProcessOpenGL(ProcessOpenGLStruct* pGL);
+    FFResult InitGL(const FFGLViewportStruct *vp);
+    FFResult DeInitGL();
     virtual DWORD SetTime(double time);
     
 	///////////////////////////////////////////////////

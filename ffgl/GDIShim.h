@@ -44,6 +44,7 @@ BOOL ExtTextOut(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc,
 
 class CGdiObject {
 public:
+    CGdiObject() : _handle(0) {}
     BOOL DeleteObject();
     operator HGDIOBJ() { return _handle; }
 protected:

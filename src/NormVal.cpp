@@ -13,7 +13,7 @@
  
 */
 
-#include <stdafx.h>
+#include "stdafx.h"
 #include "NormVal.h"
 #include <math.h>
 

@@ -19,8 +19,8 @@
  
 */
 
-#include <stdafx.h>
-#include <FFGLPluginSDK.h>
+#include "stdafx.h"
+#include "FFGLPluginSDK.h"
 //#include "FreeFrame.h"
 #include "MainFrm.h"
 //#include "PathStr.h"
