@@ -104,6 +104,7 @@
 #include "WhorldView.h"
 #include <math.h>
 #include "hls.h"
+#include "utilities.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -390,7 +391,8 @@ void CWhorldView::RotateHue(double Degrees)
 			Ring.Hue -= 360;
 		else if (Ring.Hue < 0)
 			Ring.Hue += 360;
-		CHLS::hls2rgb(Ring.Hue, Ring.Lightness, Ring.Saturation, r, g, b);
+		//CHLS::hls2rgb(Ring.Hue, Ring.Lightness, Ring.Saturation, r, g, b);
+        HSVtoRGB(Ring.Hue/360.0, Ring.Saturation, Ring.Lightness, &r, &g, &b);
 		Ring.Color = RGB(round(r * 255), round(g * 255), round(b * 255)) 
 			^ m_st.InvertMask;
 	}
@@ -422,7 +424,8 @@ void CWhorldView::AddRing()
 	m_Parms.Lightness = CLAMP(m_Parms.Lightness, 0, 1);
 	m_Parms.Saturation = CLAMP(m_Parms.Saturation, 0, 1);
 	double	r, g, b;
-	CHLS::hls2rgb(m_st.Hue, m_Parms.Lightness, m_Parms.Saturation, r, g, b);
+	//CHLS::hls2rgb(m_st.Hue, m_Parms.Lightness, m_Parms.Saturation, r, g, b);
+    HSVtoRGB(m_st.Hue/360.0, m_Parms.Saturation, m_Parms.Lightness, &r, &g, &b);
 	m_st.Color = RGB(round(r * 255), round(g * 255), round(b * 255));
 	RING	Ring;
 	Ring.Reverse = m_Parms.RingGrowth < 0;
@@ -576,7 +579,8 @@ void CWhorldView::TimerHook(const CParmInfo& Info, const PARMS& GlobParm, double
 	double	r, g, b;
 	m_Parms.BkLightness = CLAMP(m_Parms.BkLightness, 0, 1);
 	m_Parms.BkSaturation = CLAMP(m_Parms.BkSaturation, 0, 1);
-	CHLS::hls2rgb(m_Parms.BkHue, m_Parms.BkLightness, m_Parms.BkSaturation, r, g, b);
+	//CHLS::hls2rgb(m_Parms.BkHue, m_Parms.BkLightness, m_Parms.BkSaturation, r, g, b);
+    HSVtoRGB(m_Parms.BkHue/360.0, m_Parms.BkSaturation, m_Parms.BkLightness, &r, &g, &b);
 	m_st.BkColor = RGB(round(r * 255), round(g * 255), round(b * 255));
 	m_PrevInfo = Info;
 	// update rings

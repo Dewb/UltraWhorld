@@ -28,6 +28,8 @@ public:
     static COLORREF bkColor;
     static COLORREF dcPenColor;
     static COLORREF dcBrushColor;
+    static COLORREF solidPenColor;
+    static int solidPenWidth;
 
     GdiImpl() {
         handles.resize(MAX_GDI_HANDLES, nullptr);
@@ -36,7 +38,6 @@ public:
 
         // DC_PEN
         createNewObject([this]{
-
             NVGcolor color = nvgRGB(GetRValue(GdiImpl::dcPenColor),
                                     GetGValue(GdiImpl::dcPenColor),
                                     GetBValue(GdiImpl::dcPenColor));
@@ -59,6 +60,15 @@ public:
             nvgStrokeColor(vg, color);
         });
 
+        // PS_SOLID pens
+        createNewObject([this]{
+            NVGcolor color = nvgRGB(GetRValue(GdiImpl::solidPenColor),
+                                    GetGValue(GdiImpl::solidPenColor),
+                                    GetBValue(GdiImpl::solidPenColor));
+            nvgStrokeColor(vg, color);
+            nvgStrokeWidth(vg, GdiImpl::solidPenWidth);
+        });
+
 
     }
     
@@ -71,12 +81,7 @@ public:
         }
         return nullptr;
     }
-    
-    void deleteObject(HGDIOBJ obj) {
-        if (obj != nullptr) {
-            handles[((size_t)obj)-1] = nullptr;
-        }
-    }
+
     
     void selectObject(HGDIOBJ obj) {
         if (obj != nullptr && (size_t)obj >= 1 && (size_t)obj <= MAX_GDI_HANDLES) {
@@ -96,6 +101,8 @@ protected:
 COLORREF GdiImpl::bkColor = 0x000000;
 COLORREF GdiImpl::dcPenColor = 0xFFFFFF;
 COLORREF GdiImpl::dcBrushColor = 0xC0C0C0;
+COLORREF GdiImpl::solidPenColor = 0xFF0000;
+int GdiImpl::solidPenWidth = 5;
 
 GdiImpl gdi;
 
@@ -215,22 +222,19 @@ BOOL ExtTextOut(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc,
 }
 
 BOOL CGdiObject::DeleteObject() {
-    gdi.deleteObject(_handle);
+    _handle = nullptr;
     return TRUE;
 }
 
 HGDIOBJ CPen::CreatePen(int nPenStyle, int nWidth, COLORREF crColor) {
-    if (_handle) {
-        gdi.deleteObject(_handle);
+    if (nPenStyle == PS_SOLID) {
+        GdiImpl::solidPenColor = crColor;
+        GdiImpl::solidPenWidth = nWidth;
+        _handle = (HGDIOBJ)4;
+        return _handle;
     }
-    _handle = gdi.createNewObject([=] () {
-        NVGcolor color = nvgRGB(GetRValue(crColor),
-                                GetGValue(crColor),
-                                GetBValue(crColor));
-        nvgStrokeColor(gdi.vg, color);
-        nvgStrokeWidth(gdi.vg, nWidth);
-    });
-    return _handle;
+
+    return nullptr;
 }
 
 
