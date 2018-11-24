@@ -29,7 +29,7 @@ UltraWhorldFFGL::UltraWhorldFFGL()
 	SetMaxInputs(0);
       
 #undef FFPARM
-#define FFPARM(tag, defval, name) SetParamInfo(PARAM_##tag, name, FF_TYPE_STANDARD, (float) defval );
+#define FFPARM(tag, defval, name, type) SetParamInfo(PARAM_##tag, name, type, (float) defval );
 #include "FFParmDef.h"
     
 }

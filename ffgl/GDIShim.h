@@ -34,6 +34,7 @@ HGDIOBJ GetStockObject(int fnObject);
 
 BOOL BeginPath(HDC hdc);
 BOOL EndPath(HDC hdc);
+BOOL StrokePath(HDC dc);
 BOOL StrokeAndFillPath(HDC hdc);
 BOOL PolyPolygon(HDC hdc, const POINT* lpPoints, const int* lpPolyCounts, int nCount);
 BOOL Polygon(HDC hdc, const POINT* lpPoints, int nCount);

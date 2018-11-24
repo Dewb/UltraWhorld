@@ -27,7 +27,7 @@ public:
 	UltraWhorldFFGL();
     virtual ~UltraWhorldFFGL() {}
     
-#define FFPARM(tag, defval, name) PARAM_##tag,
+#define FFPARM(tag, defval, name, type) PARAM_##tag,
 	enum {
 #include "FFParmDef.h"
 		NUM_PARAMS

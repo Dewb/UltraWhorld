@@ -1014,6 +1014,7 @@ void CWhorldView::DrawRing(HDC dc, RING& rp, bool isHead)
 					}
 				}
 			} else {
+                BeginPath(dc);
 				if (PrevPoints && char(rp.Reverse) == PrevReverse)  {
 					int	sa[2] = {Points, PrevPoints};
 					PolyPolygon(dc, m_pa, sa, 2);
@@ -1031,8 +1032,11 @@ void CWhorldView::DrawRing(HDC dc, RING& rp, bool isHead)
 						Polygon(dc, m_pa, Points);	// fill innermost ring
 					}
 				}
+                EndPath(dc);
+                StrokeAndFillPath(dc);
 			}
 		} else {
+            BeginPath(dc);
 			if (LineWidth > 0) {
 				m_Pen.DeleteObject();
 				m_Pen.CreatePen(PS_SOLID, LineWidth, rp.Color);
@@ -1051,6 +1055,8 @@ void CWhorldView::DrawRing(HDC dc, RING& rp, bool isHead)
 				m_pa[Points] = m_pa[0];	// close the shape
 				Polyline(dc, m_pa, Points + 1);
 			}
+            EndPath(dc);
+            StrokePath(dc);
 		}
 		PrevPoints = Points;
 		PrevRadius = rp.Steps;
